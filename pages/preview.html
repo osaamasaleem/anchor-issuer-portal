@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credential Preview - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation - Loaded dynamically -->
+    <div id="navbar"></div>
+    
+    <!-- Sidebar - Loaded dynamically -->
+    <div id="sidebar"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <h1 style="color: #311F5A; margin-bottom: 16px;">Credential Issued Successfully</h1>
+            <p style="color: #718096; margin-bottom: 32px;">Your credential has been issued and signed</p>
+            
+            <div id="credentialPreview" class="card" style="margin-bottom: 30px;">
+                <!-- Credential preview will be loaded here -->
+            </div>
+            
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <button onclick="window.location.href='issue.html'" class="btn btn-secondary">
+                    <i class="fas fa-plus"></i>
+                    Issue Another
+                </button>
+                <button onclick="window.location.href='dashboard.html'" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Go to Dashboard
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Scripts -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load components
+            await Utils.loadComponent('navbar', '../components/navbar.html');
+            await Utils.loadComponent('sidebar', '../components/sidebar.html');
+            
+            // Check authentication
+            if (!Auth.requireAuth()) return;
+            
+            const user = Auth.getCurrentUser();
+            Utils.updateUserInfo(user);
+            Utils.initSidebarActiveState();
+            
+            // Load credential data from URL params or localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const txHash = urlParams.get('txHash');
+            const ipfsHash = urlParams.get('ipfsHash');
+            const studentName = urlParams.get('studentName');
+            
+            if (txHash) {
+                // Load credential from localStorage
+                const credentials = JSON.parse(localStorage.getItem('issued_credentials') || '[]');
+                const credential = credentials.find(c => c.txHash === txHash);
+                
+                if (credential) {
+                    displayCredential(credential);
+                } else {
+                    displayCredential({
+                        fullName: studentName || 'Student',
+                        degreeTitle: 'Degree',
+                        gpa: 'N/A',
+                        graduationDate: new Date().toISOString(),
+                        txHash: txHash,
+                        ipfsHash: ipfsHash || 'N/A'
+                    });
+                }
+            } else {
+                // Show placeholder
+                document.getElementById('credentialPreview').innerHTML = `
+                    <div class="card-body">
+                        <p>No credential data found. Please issue a credential first.</p>
+                    </div>
+                `;
+            }
+        });
+        
+        function displayCredential(credential) {
+            const formattedDate = Utils.formatDate(credential.graduationDate);
+            const preview = document.getElementById('credentialPreview');
+            
+            preview.innerHTML = `
+                <div style="background: linear-gradient(135deg, #311F5A 0%, #4A3A75 100%); 
+                            border-radius: 12px; padding: 30px; color: white; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; 
+                                margin-bottom: 20px;">
+                        <div>
+                            <h3 style="color: white; margin-bottom: 5px;">${credential.degreeTitle || 'Degree'}</h3>
+                            <p style="opacity: 0.8; font-size: 14px;">Digital Academic Credential</p>
+                        </div>
+                        <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.1); 
+                                    border-radius: 8px; display: flex; align-items: center; 
+                                    justify-content: center; font-size: 24px;">
+                            🎓
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 8px; 
+                                padding: 20px; margin-bottom: 20px;">
+                        <h5 style="color: white; margin-bottom: 15px;">Awarded To</h5>
+                        <h2 style="color: white; margin-bottom: 5px;">${credential.fullName || 'Student'}</h2>
+                        ${credential.studentID ? `<p style="opacity: 0.8;">ID: ${credential.studentID}</p>` : ''}
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); 
+                                gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">GPA</p>
+                            <p style="font-size: 24px; font-weight: bold;">${credential.gpa || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">Graduation Date</p>
+                            <p style="font-size: 18px; font-weight: bold;">${formattedDate}</p>
+                        </div>
+                    </div>
+                    
+                    ${credential.major ? `
+                        <div style="border-top: 1px solid rgba(255,255,255,0.2); 
+                                    padding-top: 15px; margin-top: 15px;">
+                            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">Major</p>
+                            <p style="font-size: 16px;">${credential.major}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${credential.honors ? `
+                        <div style="border-top: 1px solid rgba(255,255,255,0.2); 
+                                    padding-top: 15px; margin-top: 15px;">
+                            <p style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">Honors</p>
+                            <p style="font-size: 16px;">${credential.honors}</p>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="card-body">
+                    <h5 style="color: #311F5A; margin-bottom: 15px;">Technical Details</h5>
+                    <div style="display: grid; gap: 10px; font-size: 14px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #718096;">Transaction Hash:</span>
+                            <a href="https://polygonscan.com/tx/${credential.txHash}" target="_blank" 
+                               style="font-family: monospace; color: #311F5A;">
+                                ${credential.txHash.substring(0, 20)}...
+                            </a>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #718096;">IPFS Hash:</span>
+                            <span style="font-family: monospace; color: #718096;">
+                                ${credential.ipfsHash ? credential.ipfsHash.substring(0, 20) + '...' : 'N/A'}
+                            </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #718096;">Status:</span>
+                            <span class="badge badge-success">${credential.status || 'Valid'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation - Loaded dynamically -->
+    <div id="navbar"></div>
+    
+    <!-- Sidebar - Loaded dynamically -->
+    <div id="sidebar"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Dashboard</h1>
+                <p>Overview of your credential issuance activity</p>
+            </div>
+            <div class="dashboard-actions">
+                <div class="flex gap-md">
+                    <button onclick="Dashboard.refreshData()" class="btn btn-secondary">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                    <button onclick="Dashboard.exportData()" class="btn btn-outline">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="statsGrid">
+            <!-- Stats will be loaded via JavaScript -->
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Recent Activity</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="table" id="recentActivity">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Degree</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Transaction</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 14px; color: #718096;">
+                        Showing last 10 activities
+                    </span>
+                    <a href="registry.html" class="btn btn-sm btn-outline">
+                        View All Records
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="grid grid-3 gap-lg mt-5">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Issuance Trends</h3>
+                </div>
+                <div class="card-body">
+                    <div style="height: 200px; background: #F8F9FA; border-radius: 6px; 
+                                display: flex; align-items: center; justify-content: center; 
+                                color: #718096;">
+                        Chart: Monthly Issuance (Placeholder)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Top Degrees</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">BS Computer Science</span>
+                            <span class="info-value">420</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">BBA</span>
+                            <span class="info-value">380</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">BS Software Engineering</span>
+                            <span class="info-value">250</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">MS Computer Science</span>
+                            <span class="info-value">120</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>System Status</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">DID Status</span>
+                            <span class="badge badge-success">Active</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Smart Contract</span>
+                            <span class="badge badge-success">Connected</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">IPFS Gateway</span>
+                            <span class="badge badge-success">Online</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Last Sync</span>
+                            <span class="info-value">Just now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Scripts -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load components
+            await Utils.loadComponent('navbar', '../components/navbar.html');
+            await Utils.loadComponent('sidebar', '../components/sidebar.html');
+            
+            // Initialize dashboard
+            await Dashboard.init();
+        });
+    </script>
+</body>
+</html>

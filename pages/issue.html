@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Credential - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation - Loaded dynamically -->
+    <div id="navbar"></div>
+    
+    <!-- Sidebar - Loaded dynamically -->
+    <div id="sidebar"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="issue-header" style="margin-bottom: 32px;">
+            <h1>Issue New Credential</h1>
+            <p>Create and digitally sign a new degree credential</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2>Student Information</h2>
+            </div>
+            <div class="card-body">
+                <form id="issueForm" class="issue-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="studentDID" class="form-label">Student DID *</label>
+                            <input type="text" id="studentDID" class="form-input" 
+                                   placeholder="did:ethr:0x1234..." required>
+                            <div style="font-size: 12px; color: #718096; margin-top: 4px;">
+                                Student's Decentralized Identifier
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="studentEmail" class="form-label">Student Email (Optional)</label>
+                            <input type="email" id="studentEmail" class="form-input" 
+                                   placeholder="student@university.edu">
+                            <div style="font-size: 12px; color: #718096; margin-top: 4px;">
+                                For sending the credential link
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName" class="form-label">Full Name *</label>
+                            <input type="text" id="fullName" class="form-input" 
+                                   placeholder="Usama Saleem" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="studentID" class="form-label">Student ID</label>
+                            <input type="text" id="studentID" class="form-input" 
+                                   placeholder="F12345678">
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-5">
+                        <div class="card-header">
+                            <h3>Degree Details</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="degreeTitle" class="form-label">Degree Title *</label>
+                                    <select id="degreeTitle" class="form-select" required>
+                                        <option value="">Select Degree</option>
+                                        <option value="BS Computer Science">Bachelor of Science in Computer Science</option>
+                                        <option value="BBA">Bachelor of Business Administration</option>
+                                        <option value="BS Software Engineering">Bachelor of Science in Software Engineering</option>
+                                        <option value="MS Computer Science">Master of Science in Computer Science</option>
+                                        <option value="MBA">Master of Business Administration</option>
+                                        <option value="other">Other (Specify)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="major" class="form-label">Major/Specialization</label>
+                                    <input type="text" id="major" class="form-input" 
+                                           placeholder="Artificial Intelligence">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="gpa" class="form-label">GPA/CGPA *</label>
+                                    <input type="number" id="gpa" class="form-input" 
+                                           step="0.01" min="0" max="4.0" 
+                                           placeholder="3.8" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="graduationDate" class="form-label">Graduation Date *</label>
+                                    <input type="date" id="graduationDate" class="form-input" 
+                                           required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="honors" class="form-label">Honors/Distinctions</label>
+                                <input type="text" id="honors" class="form-input" 
+                                       placeholder="Summa Cum Laude, Dean's List">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-5">
+                        <div class="card-header">
+                            <h3>Issuance Settings</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div style="padding: 16px; background: #F8F9FA; border-radius: 6px; 
+                                            border: 1px solid #E2E8F0;">
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                        <input type="checkbox" id="storeOnChain" checked 
+                                               style="margin: 0;">
+                                        <div>
+                                            <label for="storeOnChain" style="font-weight: 500; 
+                                                    color: #1A202C; cursor: pointer;">
+                                                Store on Blockchain (Polygon)
+                                            </label>
+                                            <p style="font-size: 12px; color: #718096; margin-top: 4px;">
+                                                Store credential hash on Polygon blockchain for permanent verification
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <input type="checkbox" id="pinToIPFS" checked 
+                                               style="margin: 0;">
+                                        <div>
+                                            <label for="pinToIPFS" style="font-weight: 500; 
+                                                    color: #1A202C; cursor: pointer;">
+                                                Pin to IPFS
+                                            </label>
+                                            <p style="font-size: 12px; color: #718096; margin-top: 4px;">
+                                                Store full credential data on IPFS for decentralized access
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expirationDate" class="form-label">Expiration Date (Optional)</label>
+                                <input type="date" id="expirationDate" class="form-input">
+                                <div style="font-size: 12px; color: #718096; margin-top: 4px;">
+                                    Leave empty for permanent credentials
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mt-5" style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-eye"></i>
+                            Preview
+                        </button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+       
+    </main>
+    
+    <!-- Scripts -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/issue.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load components
+            await Utils.loadComponent('navbar', '../components/navbar.html');
+            await Utils.loadComponent('sidebar', '../components/sidebar.html');
+            
+            // Initialize issue page
+            await Issue.init();
+        });
+    </script>
+</body>
+</html>

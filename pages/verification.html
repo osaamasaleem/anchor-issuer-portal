@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div style="width: 80px; height: 80px; background: #E6FFFA; color: #22543D; 
+                            border-radius: 50%; display: flex; align-items: center; 
+                            justify-content: center; margin: 0 auto 24px; font-size: 36px;">
+                    ✉️
+                </div>
+                <h1>Verification Email Sent</h1>
+                <p>Please check your email to verify your account</p>
+            </div>
+            
+            <div class="auth-body">
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="margin-bottom: 24px;">
+                        <div style="width: 60px; height: 60px; background: #C6F6D5; color: #22543D; 
+                                    border-radius: 50%; display: flex; align-items: center; 
+                                    justify-content: center; margin: 0 auto 24px; font-size: 24px;">
+                            ✓
+                        </div>
+                        <h3 style="color: #311F5A; margin-bottom: 12px;">Verification in Progress</h3>
+                        <p style="color: #718096; margin-bottom: 24px;">
+                            We've sent a verification email to <strong id="verificationEmail"></strong>
+                        </p>
+                        <p style="color: #718096; font-size: 14px;">
+                            Please check your inbox and click the verification link to activate your account.
+                        </p>
+                    </div>
+                    
+                    <div style="background: #F8F9FA; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
+                            <div class="spinner" style="width: 20px; height: 20px; border: 3px solid #E2E8F0; 
+                                        border-top-color: #311F5A; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                            <span style="color: #718096; font-size: 14px;">Verifying your account...</span>
+                        </div>
+                        <p style="color: #A0AEC0; font-size: 12px; margin: 0;">
+                            This page will automatically redirect once verification is complete
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <p style="color: #718096; font-size: 14px; margin-bottom: 16px;">
+                            Didn't receive the email?
+                        </p>
+                        <button onclick="resendVerification()" class="btn btn-outline">
+                            <i class="fas fa-redo" style="margin-right: 8px;"></i>
+                            Resend Verification Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <script src="../js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get email from sessionStorage
+            const signupData = sessionStorage.getItem('signup_data');
+            if (signupData) {
+                const data = JSON.parse(signupData);
+                document.getElementById('verificationEmail').textContent = data.email;
+            } else {
+                // If no signup data, redirect back to signup
+                window.location.href = 'signup.html';
+            }
+            
+            // Auto-redirect to success page after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'signup-success.html';
+            }, 3000);
+        });
+        
+        function resendVerification() {
+            // Show notification
+            if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                Utils.showNotification('Verification email resent!', 'success');
+            } else {
+                alert('Verification email resent!');
+            }
+            
+            // Reset timer
+            setTimeout(() => {
+                window.location.href = 'signup-success.html';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
