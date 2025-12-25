@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    <!-- Load Inter Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Anchor Issuer Portal</h1>
+                <p>University Credential Management System</p>
+            </div>
+            <div class="auth-body">
+                <div style="text-align: center; padding: 40px 0;">
+                    <h2 style="margin-bottom: 20px; color: #311F5A;">Welcome</h2>
+                    <p style="margin-bottom: 30px; color: #718096;">
+                        Secure platform for issuing and managing digital credentials
+                    </p>
+                    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                        <a href="pages/login.html" class="btn btn-primary btn-lg">
+                            Login to Portal
+                        </a>
+                        <a href="pages/signup.html" class="btn btn-outline btn-lg">
+                            Register Institution
+                        </a>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #E2E8F0;">
+                    <h3 style="font-size: 14px; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px;">
+                        Features
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <div style="padding: 12px; background: #F8F9FA; border-radius: 6px;">
+                            <div style="font-weight: 600; color: #311F5A; margin-bottom: 4px;">🎓 Issue Credentials</div>
+                            <div style="font-size: 12px; color: #718096;">Create and sign digital degrees</div>
+                        </div>
+                        <div style="padding: 12px; background: #F8F9FA; border-radius: 6px;">
+                            <div style="font-weight: 600; color: #311F5A; margin-bottom: 4px;">🔐 Secure Signing</div>
+                            <div style="font-size: 12px; color: #718096;">Cryptographic signing with DID</div>
+                        </div>
+                        <div style="padding: 12px; background: #F8F9FA; border-radius: 6px;">
+                            <div style="font-weight: 600; color: #311F5A; margin-bottom: 4px;">📱 QR Delivery</div>
+                            <div style="font-size: 12px; color: #718096;">Instant delivery via QR codes</div>
+                        </div>
+                        <div style="padding: 12px; background: #F8F9FA; border-radius: 6px;">
+                            <div style="font-weight: 600; color: #311F5A; margin-bottom: 4px;">⚡ Smart Contracts</div>
+                            <div style="font-size: 12px; color: #718096;">On-chain verification on Polygon</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Note: We don't auto-redirect here to allow users to access the landing page
+        // even when logged in. They can manually navigate to dashboard if needed.
+    </script>
+</body>
+</html>
