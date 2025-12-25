@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registry - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation - Loaded dynamically -->
+    <div id="navbar"></div>
+    
+    <!-- Sidebar - Loaded dynamically -->
+    <div id="sidebar"></div>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="registry-header">
+            <div>
+                <h1>Credential Registry</h1>
+                <p>Search and manage all issued credentials</p>
+            </div>
+            <div>
+                <button onclick="window.location.href='issue.html'" class="btn btn-primary">
+                    <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                    Issue New
+                </button>
+            </div>
+        </div>
+        
+        <!-- Search and Filters -->
+        <div class="card mb-5">
+            <div class="card-body">
+                <div class="search-box">
+                    <div style="position: relative; flex: 1;">
+                        <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; 
+                            transform: translateY(-50%); color: #A0AEC0;"></i>
+                        <input type="text" id="searchInput" class="form-input" 
+                               style="padding-left: 40px;"
+                               placeholder="Search by student name, DID, or degree...">
+                    </div>
+                    <button onclick="searchCredentials()" class="btn btn-primary">
+                        Search
+                    </button>
+                    <button onclick="resetSearch()" class="btn btn-secondary">
+                        Reset
+                    </button>
+                </div>
+                
+                <div class="filters mt-4">
+                    <select id="yearFilter" class="form-select filter-select">
+                        <option value="">All Years</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                    </select>
+                    
+                    <select id="degreeFilter" class="form-select filter-select">
+                        <option value="">All Degrees</option>
+                        <option value="BSCS">BS Computer Science</option>
+                        <option value="BBA">BBA</option>
+                        <option value="BSSE">BS Software Engineering</option>
+                        <option value="MSCS">MS Computer Science</option>
+                    </select>
+                    
+                    <select id="statusFilter" class="form-select filter-select">
+                        <option value="">All Status</option>
+                        <option value="valid">Valid</option>
+                        <option value="pending">Pending</option>
+                        <option value="revoked">Revoked</option>
+                    </select>
+                    
+                    <button onclick="applyFilters()" class="btn btn-outline">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Registry Table -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>All Credentials</h2>
+                    <div style="font-size: 14px; color: #718096;">
+                        <span id="totalCount">0</span> records found
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="table" id="registryTable">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Student DID</th>
+                                <th>Degree</th>
+                                <th>Issued On</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registryBody">
+                            <!-- Data will be loaded via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 14px; color: #718096;">
+                        Page 1 of 1
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-sm btn-secondary" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-sm btn-secondary">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Scripts -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load components
+            await Utils.loadComponent('navbar', '../components/navbar.html');
+            await Utils.loadComponent('sidebar', '../components/sidebar.html');
+            
+            // Check authentication
+            if (!Auth.requireAuth()) return;
+            
+            const user = Auth.getCurrentUser();
+            Utils.updateUserInfo(user);
+            Utils.initSidebarActiveState();
+            
+            // Load registry data
+            loadRegistryData();
+            
+            // Setup search input
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchCredentials();
+                }
+            });
+        });
+        
+        // Mock data for registry
+        const mockCredentials = [
+            { id: '1', studentName: 'Usama Saleem', studentDID: 'did:ethr:0x123abc', 
+              degree: 'BS Computer Science', gpa: '3.8', issuedDate: '2024-01-15', 
+              status: 'Valid', txHash: '0xabc123' },
+            { id: '2', studentName: 'Ali Raza', studentDID: 'did:ethr:0x456def', 
+              degree: 'BBA', gpa: '3.5', issuedDate: '2024-01-14', 
+              status: 'Valid', txHash: '0xdef456' },
+            { id: '3', studentName: 'Sara Khan', studentDID: 'did:ethr:0x789ghi', 
+              degree: 'BS Software Engineering', gpa: '3.9', issuedDate: '2024-01-13', 
+              status: 'Pending', txHash: '0xghi789' },
+            { id: '4', studentName: 'Ahmed Malik', studentDID: 'did:ethr:0x012jkl', 
+              degree: 'MS Computer Science', gpa: '3.7', issuedDate: '2024-01-12', 
+              status: 'Valid', txHash: '0xjkl012' },
+            { id: '5', studentName: 'Fatima Noor', studentDID: 'did:ethr:0x345mno', 
+              degree: 'BS Computer Science', gpa: '2.8', issuedDate: '2024-01-11', 
+              status: 'Revoked', txHash: '0xmno345' },
+            { id: '6', studentName: 'Bilal Ahmed', studentDID: 'did:ethr:0x678pqr', 
+              degree: 'BBA', gpa: '3.6', issuedDate: '2023-12-20', 
+              status: 'Valid', txHash: '0xpqr678' },
+            { id: '7', studentName: 'Zainab Ali', studentDID: 'did:ethr:0x901stu', 
+              degree: 'BS Computer Science', gpa: '3.4', issuedDate: '2023-12-15', 
+              status: 'Valid', txHash: '0xstu901' },
+            { id: '8', studentName: 'Omar Khan', studentDID: 'did:ethr:0x234vwx', 
+              degree: 'MS Computer Science', gpa: '3.9', issuedDate: '2023-12-10', 
+              status: 'Valid', txHash: '0xvwx234' }
+        ];
+        
+        let filteredCredentials = [...mockCredentials];
+        
+        function loadRegistryData() {
+            const tbody = document.getElementById('registryBody');
+            if (!tbody) return;
+            
+            let html = '';
+            
+            filteredCredentials.forEach(cred => {
+                const statusClass = cred.status === 'Valid' ? 'badge-success' :
+                                  cred.status === 'Pending' ? 'badge-warning' :
+                                  'badge-danger';
+                
+                const formattedDate = Utils.formatDate(cred.issuedDate);
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 500;">${cred.studentName}</div>
+                            <div style="font-size: 12px; color: #718096;">GPA: ${cred.gpa}</div>
+                        </td>
+                        <td>
+                            <div style="font-family: monospace; font-size: 12px; color: #4A3A75;">
+                                ${cred.studentDID}
+                            </div>
+                        </td>
+                        <td>${cred.degree}</td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <span class="badge ${statusClass}">${cred.status}</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="credential.html?id=${cred.txHash}" 
+                                   class="btn btn-sm btn-outline">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                ${cred.status === 'Valid' ? `
+                                    <button onclick="revokeCredential('${cred.id}')" 
+                                            class="btn btn-sm btn-danger">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            document.getElementById('totalCount').textContent = filteredCredentials.length;
+        }
+        
+        function searchCredentials() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm.trim()) {
+                filteredCredentials = [...mockCredentials];
+            } else {
+                filteredCredentials = mockCredentials.filter(cred => 
+                    cred.studentName.toLowerCase().includes(searchTerm) ||
+                    cred.studentDID.toLowerCase().includes(searchTerm) ||
+                    cred.degree.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            loadRegistryData();
+        }
+        
+        function applyFilters() {
+            const year = document.getElementById('yearFilter').value;
+            const degree = document.getElementById('degreeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            filteredCredentials = mockCredentials.filter(cred => {
+                let matches = true;
+                
+                if (year) {
+                    const credYear = new Date(cred.issuedDate).getFullYear().toString();
+                    matches = matches && credYear === year;
+                }
+                
+                if (degree) {
+                    matches = matches && cred.degree.includes(degree);
+                }
+                
+                if (status) {
+                    matches = matches && cred.status.toLowerCase() === status;
+                }
+                
+                return matches;
+            });
+            
+            loadRegistryData();
+        }
+        
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('yearFilter').value = '';
+            document.getElementById('degreeFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            
+            filteredCredentials = [...mockCredentials];
+            loadRegistryData();
+        }
+        
+        function revokeCredential(credentialId) {
+            Utils.showConfirmDialog(
+                'Revoke Credential',
+                'Are you sure you want to revoke this credential? This action cannot be undone.',
+                'Revoke',
+                'Cancel'
+            ).then(confirmed => {
+                if (confirmed) {
+                    // In a real app, this would call an API
+                    showNotification('Credential revocation initiated...', 'info');
+                    
+                    setTimeout(() => {
+                        // Update mock data
+                        const index = mockCredentials.findIndex(c => c.id === credentialId);
+                        if (index !== -1) {
+                            mockCredentials[index].status = 'Revoked';
+                        }
+                        
+                        // Update filtered view
+                        const filteredIndex = filteredCredentials.findIndex(c => c.id === credentialId);
+                        if (filteredIndex !== -1) {
+                            filteredCredentials[filteredIndex].status = 'Revoked';
+                        }
+                        
+                        loadRegistryData();
+                        showNotification('Credential revoked successfully', 'success');
+                    }, 1000);
+                }
+            });
+        }
+        
+    </script>
+</body>
+</html>

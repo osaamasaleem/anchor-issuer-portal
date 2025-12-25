@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your Issuer Portal</p>
+            </div>
+            
+            <div class="auth-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Institutional Email</label>
+                        <input type="email" id="email" class="form-input" 
+                               placeholder="admin@university.edu" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="password" class="form-label">Password</label>
+                            <a href="#" style="font-size: 12px; color: #4A3A75;">Forgot Password?</a>
+                        </div>
+                        <input type="password" id="password" class="form-input" 
+                               placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary w-full">
+                            Sign In
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p style="color: #718096; font-size: 14px;">
+                            Don't have an account? 
+                            <a href="signup.html" style="color: #311F5A; font-weight: 500;">Register your institution</a>
+                        </p>
+                    </div>
+                </form>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div style="text-align: center;">
+                        <h3 style="font-size: 14px; color: #718096; text-transform: uppercase; 
+                                  letter-spacing: 0.05em; margin-bottom: 12px;">
+                            Security Notice
+                        </h3>
+                        <p style="font-size: 12px; color: #A0AEC0; line-height: 1.5;">
+                            This portal uses cryptographic signing for credential issuance. 
+                            Your institutional DID and private key are securely stored.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in (only redirect if not directly accessing login page or coming from signup-success)
+            try {
+                const userData = localStorage.getItem('issuer_user');
+                const referrer = document.referrer;
+                const isDirectAccess = !referrer || 
+                                      referrer.includes('login.html') || 
+                                      referrer.includes('index.html') ||
+                                      referrer.includes('signup-success.html');
+                
+                // Don't auto-redirect if coming from signup-success - let them login manually
+                if (userData && !isDirectAccess) {
+                    const user = JSON.parse(userData);
+                    if (user) {
+                        window.location.href = 'dashboard.html';
+                    }
+                }
+            } catch (error) {
+                // If error parsing, just stay on login page
+                console.error('Error checking user:', error);
+            }
+            
+            // Form submission
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // Basic validation
+                if (!email || !password) {
+                    if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                        Utils.showNotification('Please fill in all fields', 'error');
+                    } else {
+                        alert('Please fill in all fields');
+                    }
+                    return;
+                }
+                
+                // Validate email format
+                if (!Utils.isValidEmail(email)) {
+                    if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                        Utils.showNotification('Please enter a valid email address', 'error');
+                    } else {
+                        alert('Please enter a valid email address');
+                    }
+                    return;
+                }
+                
+                // Accept any email/password combination (frontend only)
+                // Generate or retrieve user data
+                let userData = {
+                    email: email,
+                    name: email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'User',
+                    institution: email.split('@')[1]?.split('.')[0]?.toUpperCase() || 'Institution',
+                    did: 'did:ethr:0x' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+                };
+                
+                // Check if user already exists in localStorage
+                const existingUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
+                const existingUser = existingUsers.find(u => u.email === email);
+                
+                if (existingUser) {
+                    // Use existing user data
+                    userData = {
+                        email: existingUser.email,
+                        name: existingUser.name || userData.name,
+                        institution: existingUser.institution || userData.institution,
+                        did: existingUser.did || userData.did
+                    };
+                } else {
+                    // Save new user
+                    existingUsers.push(userData);
+                    localStorage.setItem('registered_users', JSON.stringify(existingUsers));
+                }
+                
+                // Store in issuer_user for session
+                localStorage.setItem('issuer_user', JSON.stringify(userData));
+                
+                if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                    Utils.showNotification('Login successful! Redirecting...', 'success');
+                }
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

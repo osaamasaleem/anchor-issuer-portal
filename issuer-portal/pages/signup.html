@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Institution - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Register Institution</h1>
+                <p>Setup your digital credential issuer</p>
+            </div>
+            
+            <div class="auth-body">
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="institutionName" class="form-label">Institution Name</label>
+                        <input type="text" id="institutionName" class="form-input" 
+                               placeholder="Fast University Islamabad" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="officialEmail" class="form-label">Official Email</label>
+                        <input type="email" id="officialEmail" class="form-input" 
+                               placeholder="admin@university.edu" required>
+                        <p style="font-size: 12px; color: #718096; margin-top: 4px;">
+                            This will be used for login and credential signing
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="website" class="form-label">Institution Website</label>
+                        <input type="url" id="website" class="form-input" 
+                               placeholder="https://university.edu" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminName" class="form-label">Administrator Name</label>
+                        <input type="text" id="adminName" class="form-input" 
+                               placeholder="John Smith" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" class="form-input" 
+                               placeholder="Create a password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="form-input" 
+                               placeholder="Confirm your password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div style="padding: 16px; background: #F8F9FA; border-radius: 6px; 
+                                    border: 1px solid #E2E8F0; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: flex-start; gap: 12px;">
+                                <input type="checkbox" id="terms" required 
+                                       style="margin-top: 2px;">
+                                <div>
+                                    <label for="terms" style="font-size: 14px; color: #1A202C; 
+                                            font-weight: 500; cursor: pointer;">
+                                        I agree to the terms and conditions
+                                    </label>
+                                    <p style="font-size: 12px; color: #718096; margin-top: 4px;">
+                                        By registering, you agree that a DID and cryptographic keys 
+                                        will be generated for your institution. These keys will be 
+                                        used to digitally sign all issued credentials.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary w-full">
+                            Generate DID & Register
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p style="color: #718096; font-size: 14px;">
+                            Already have an account? 
+                            <a href="login.html" style="color: #311F5A; font-weight: 500;">Sign in here</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Note: We allow access to signup page even when logged in
+            // Users might want to register another institution
+            
+            // Form submission
+            document.getElementById('signupForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const institutionName = document.getElementById('institutionName').value;
+                const officialEmail = document.getElementById('officialEmail').value;
+                const website = document.getElementById('website').value;
+                const adminName = document.getElementById('adminName').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const terms = document.getElementById('terms').checked;
+                
+                // Basic validation
+                if (!institutionName || !officialEmail || !website || !adminName || !password || !confirmPassword) {
+                    if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                        Utils.showNotification('Please fill in all fields', 'error');
+                    } else {
+                        alert('Please fill in all fields');
+                    }
+                    return;
+                }
+                
+                // Validate email format
+                if (!Utils.isValidEmail(officialEmail)) {
+                    if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                        Utils.showNotification('Please enter a valid email address', 'error');
+                    } else {
+                        alert('Please enter a valid email address');
+                    }
+                    return;
+                }
+                
+                // Validate website URL format
+                try {
+                    new URL(website);
+                } catch (error) {
+                    if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                        Utils.showNotification('Please enter a valid website URL', 'error');
+                    } else {
+                        alert('Please enter a valid website URL');
+                    }
+                    return;
+                }
+                
+                // Check if passwords match
+                if (password !== confirmPassword) {
+                    if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                        Utils.showNotification('Passwords do not match', 'error');
+                    } else {
+                        alert('Passwords do not match');
+                    }
+                    return;
+                }
+                
+                // Check terms agreement
+                if (!terms) {
+                    if (typeof Utils !== 'undefined' && Utils.showNotification) {
+                        Utils.showNotification('You must agree to the terms and conditions', 'error');
+                    } else {
+                        alert('You must agree to the terms and conditions');
+                    }
+                    return;
+                }
+                
+                // Generate mock DID
+                const mockDID = 'did:ethr:0x' + Math.random().toString(36).substring(2, 15) + 
+                                Math.random().toString(36).substring(2, 15) +
+                                Math.random().toString(36).substring(2, 15);
+                
+                // Show loading
+                const submitBtn = document.querySelector('#signupForm button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Generating DID...';
+                submitBtn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Create user object
+                    const userData = {
+                        email: officialEmail,
+                        name: adminName,
+                        institution: institutionName,
+                        website: website,
+                        did: mockDID,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    // Store signup data in sessionStorage for verification and success pages
+                    sessionStorage.setItem('signup_data', JSON.stringify(userData));
+                    
+                    // Store in registered users list
+                    const existingUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
+                    existingUsers.push(userData);
+                    localStorage.setItem('registered_users', JSON.stringify(existingUsers));
+                    
+                    // Redirect to verification page
+                    window.location.href = 'verification.html';
+                    
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

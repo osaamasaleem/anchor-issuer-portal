@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Successful - Anchor Issuer Portal</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div style="width: 80px; height: 80px; background: #C6F6D5; color: #22543D; 
+                            border-radius: 50%; display: flex; align-items: center; 
+                            justify-content: center; margin: 0 auto 24px; font-size: 36px;">
+                    ✓
+                </div>
+                <h1>Registration Successful!</h1>
+                <p>Your institution has been registered successfully</p>
+            </div>
+            
+            <div class="auth-body">
+                <div style="text-align: center; padding: 40px 0;">
+                    <div style="margin-bottom: 32px;">
+                        <h3 style="color: #311F5A; margin-bottom: 16px;">Welcome to Anchor Issuer Portal</h3>
+                        <p style="color: #718096; margin-bottom: 24px;">
+                            Your institution account has been created and verified successfully.
+                        </p>
+                        
+                        <div style="background: #F8F9FA; border-radius: 8px; padding: 20px; margin-bottom: 24px; text-align: left;">
+                            <h4 style="color: #311F5A; margin-bottom: 16px; font-size: 16px;">Account Details:</h4>
+                            <div style="display: grid; gap: 12px; font-size: 14px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: #718096;">Institution:</span>
+                                    <span style="color: #1A202C; font-weight: 500;" id="successInstitution"></span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: #718096;">Email:</span>
+                                    <span style="color: #1A202C; font-weight: 500;" id="successEmail"></span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: #718096;">DID:</span>
+                                    <span style="color: #1A202C; font-family: monospace; font-size: 12px;" id="successDID"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #E6FFFA; border: 1px solid #81E6D9; 
+                                    border-radius: 8px; padding: 16px; margin-bottom: 32px;">
+                            <p style="color: #22543D; margin: 0; font-size: 14px;">
+                                <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                                Your DID and cryptographic keys have been generated and are ready to use.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <a href="login.html" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+                            Go to Login
+                        </a>
+                        <p style="color: #718096; font-size: 14px; margin: 0;">
+                            Login to start issuing credentials
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get signup data from sessionStorage
+            const dataStr = sessionStorage.getItem('signup_data');
+            if (dataStr) {
+                const signupData = JSON.parse(dataStr);
+                document.getElementById('successInstitution').textContent = signupData.institutionName || 'Institution';
+                document.getElementById('successEmail').textContent = signupData.email || '';
+                document.getElementById('successDID').textContent = signupData.did || 'did:ethr:...';
+            } else {
+                // If no signup data, redirect to signup
+                window.location.href = 'signup.html';
+            }
+        });
+    </script>
+</body>
+</html>
+
